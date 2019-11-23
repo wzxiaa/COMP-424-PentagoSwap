@@ -1,0 +1,17 @@
+# Server version 0.08 running on 142.157.26.107:8123
+# Game ID: 83
+# Board class: pentago_swap.PentagoBoard
+# Timeout: 2000
+# First Move Timeout: 30000
+# Date: Sun Mar 31 21:27:52 EDT 2019
+# Player 1: Player-0, 'Human', running on 142.157.26.107
+# Player 2: Player-1, '260732931', running on 142.157.26.107
+START Player-0 Human
+START Player-1 260732931
+2 3 BL BR 0
+0 0 TL BL 1
+2 2 BL BR 0
+0 0 TL BL 1
+0 4 TL TR 0
+GAMEOVER TIMEOUT WINNER 0
+# Game ended: Sun Mar 31 21:28:00 EDT 2019

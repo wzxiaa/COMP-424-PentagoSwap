@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="EclipseModuleManager" forced_jdk="true">
+    <varelement var="file://$USER_HOME$/Downloads/pentago-swap/src" kind="linksrc:" value="src" />
+    <varelement var="file://$JRE_LIB$" value="JRE_LIB" />
+    <varelement var="file://$JRE_SRC$" kind="src:" value="JRE_SRC" />
+    <varelement var="file://$USER_HOME$/Downloads/pentago-swap/bin" kind="link:" value="bin" />
+    <src_description expected_position="1">
+      <src_folder value="file://$USER_HOME$/Downloads/pentago-swap/src" expected_position="0" />
+    </src_description>
+  </component>
+  <component name="NewModuleRootManager">
+    <output url="file://$USER_HOME$/Downloads/pentago-swap/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$" />
+    <content url="file://$USER_HOME$/Downloads/pentago-swap/src">
+      <sourceFolder url="file://$USER_HOME$/Downloads/pentago-swap/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="JRE_LIB">
+        <CLASSES>
+          <root url="file://$JRE_LIB$" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$JRE_SRC$" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>

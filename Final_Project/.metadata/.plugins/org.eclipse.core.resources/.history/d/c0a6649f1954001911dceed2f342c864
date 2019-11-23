@@ -1,0 +1,243 @@
+package student_player;
+
+import java.util.ArrayList;
+import java.util.function.UnaryOperator;
+
+import boardgame.Move;
+
+import pentago_swap.PentagoPlayer;
+import pentago_swap.PentagoBoardState.Piece;
+import pentago_swap.PentagoBoardState;
+import pentago_swap.PentagoCoord;
+import pentago_swap.PentagoMove;
+
+/** A player file submitted by a student. */
+public class StudentPlayer extends PentagoPlayer {
+	
+	private static Piece[][] board = new Piece[6][6];
+	
+    /**
+     * You must modify this constructor to return your student number. This is
+     * important, because this is what the code that runs the competition uses to
+     * associate you with your agent. The constructor should do nothing else.
+     */
+    public StudentPlayer() {
+        super("260732931");
+    }
+        
+    /**
+     * This is the primary method that you need to implement. The ``boardState``
+     * object contains the current state of the game, which your agent must use to
+     * make decisions.
+     */
+    public Move chooseMove(PentagoBoardState boardState) {
+    	
+    	update(boardState);
+    	toStringBoard(board);
+    	int alpha = Integer.MIN_VALUE;
+    	int beta = Integer.MAX_VALUE;
+    	int currentPlayer = boardState.getTurnPlayer();
+    	//System.out.println(currentPlayer);
+    	Node move = minMax(boardState,3,currentPlayers,alpha,beta,currentPlayer);
+    	if(move.getMove() == null) {
+    		System.out.println("fuck u null move!!!");
+    	}
+        // You probably will make separate functions in MyTools.w
+        // For example, maybe you'll need to load some pre-processed best opening
+        // strategies...
+        //MyTools.getSomething();
+        // Return your move to be processed by the server.
+        //return myMove;
+    	return move.getMove();
+    }
+    
+    private static final UnaryOperator<PentagoCoord> getNextHorizontal = c -> new PentagoCoord(c.getX(), c.getY()+1);
+    private static final UnaryOperator<PentagoCoord> getNextVertical = c -> new PentagoCoord(c.getX()+1, c.getY());
+    private static final UnaryOperator<PentagoCoord> getNextDiagRight = c -> new PentagoCoord(c.getX()+1, c.getY()+1);
+    private static final UnaryOperator<PentagoCoord> getNextDiagLeft = c -> new PentagoCoord(c.getX()+1, c.getY()-1);
+    
+    /**
+     * This method is used to update the board state of the game.
+     * @param state
+     */
+    private void update(PentagoBoardState state) {
+    	for(int i=0; i<6; i++) {
+    		for(int j=0; j<6; j++) {
+    			board[i][j] = state.getPieceAt(i, j);
+    		}
+    	}
+    }
+    
+    /**
+     * 
+     * @param state
+     * @param depth
+     * @param player
+     * @param alpha
+     * @param beta
+     * @return
+     */
+    public Node minMax(PentagoBoardState state, int depth, int player, int alpha, int beta, int myPlayer) {
+    	update(state);
+    	//System.out.println("Minmax");
+    	//toStringBoard(board);
+    	PentagoBoardState clonedState = (PentagoBoardState)state.clone();
+    	ArrayList<PentagoMove> nextMoves = clonedState.getAllLegalMoves();
+    	int score;
+    	Node bestMove = new Node();
+    	if(nextMoves.isEmpty() || depth == 0 || state.gameOver()) {
+    		score = calStateHeuristic(clonedState);
+    		bestMove.setHeuristic(score);
+    		return bestMove;
+    	} else {
+    		for(PentagoMove move: nextMoves) {
+    			PentagoBoardState newClonedState = (PentagoBoardState)state.clone();
+    			newClonedState.processMove(move);
+    			if(player == 0) {	// mySeed (computer) is maximizing player
+    				score = minMax(newClonedState, depth -1, , alpha, beta).getHeuristic();
+    				//System.out.println(score);
+    				if(score > alpha) {
+    					alpha = score;
+    					bestMove.setMove(move);
+    				}
+    			} else {
+    				score = minMax(newClonedState, depth -1, 0, alpha, beta).getHeuristic();
+    				if(score < beta) {
+    					beta = score;
+    					bestMove.setMove(move);
+    				}
+    			}
+    			if(alpha > beta) break;
+    		}
+    	}
+		if(player == clonedState.getTurnPlayer()) {
+			Node result = new Node();
+			result.setMove(bestMove.getMove());
+			result.setHeuristic(alpha);
+			//System.out.println("Alpha = " + alpha);
+			return result;
+		} else {
+			Node result = new Node();
+			result.setMove(bestMove.getMove());
+			result.setHeuristic(beta);
+			//System.out.println("Beta = " + beta);
+			return result;
+		}
+    }
+    
+    /**
+     * This method returns the heuristic socre of the current state.
+     * @param p
+     * @param notBlocked
+     * @return 
+     */
+    private int scoreTable(int[] pair) {
+    	if(pair[0] == 5) {
+    		return 100000;
+    	} else if(pair[0] == 4) {
+    		if(pair[1] == 2) {
+    			return 10000;
+    		} else if(pair[1] == 1) {
+    			return 1000;
+    		}
+    	} else if (pair[0] == 3) {
+    		if(pair[1] == 2) {
+    			return 1000;
+    		} else if (pair[1] == 1) {
+    			return 100;
+    		}
+    	} else if (pair[0] == 2) {
+    		if(pair[1] == 2) {
+    			return 100;
+    		} else if (pair[1] == 1) {
+    			return 10;
+    		}
+    	} else if (pair[0] == 1 && pair[1] == 2) {
+    		return 10;
+    	}
+    	return 0;
+    }  
+    
+	/**
+	 * This method calculate the heuristic value of a given state of the board
+	 * @param boardState
+	 * @return
+	 */
+	public int calStateHeuristic(PentagoBoardState boardState) {
+		PentagoCoord BL = new PentagoCoord(0, 5);
+		// Determine the player number of u
+		int player;
+		int opp = boardState.getOpponent();
+		if(opp == 1) {
+			player = 0;
+		} else {
+			player = 1;
+		}	
+		int heuristicVal = 0;
+		// Check patterns for rows
+		PentagoCoord TLRow = new PentagoCoord(0, 0);
+		for(int i = 0; i<6; i++) {
+			heuristicVal += scoreTable(checkForPattern(player, TLRow, getNextVertical));
+			if(i!=5) {
+				TLRow = getNextHorizontal.apply(TLRow);
+			}
+		}
+		// Check patterns for diagonally left
+		heuristicVal += scoreTable(checkForPattern(player, TLRow, getNextDiagRight));
+		// Check patterns for diagonally right 
+		PentagoCoord TLDR = new PentagoCoord(0, 0);
+		heuristicVal += scoreTable(checkForPattern(player, TLDR, getNextDiagLeft));
+		// Check patterns for columns
+		for(int i=0; i<6; i++) {
+			heuristicVal += scoreTable(checkForPattern(player, TLDR, getNextHorizontal));
+			if(i!=5) {
+				TLRow = getNextVertical.apply(TLRow);
+			}
+		}
+		return heuristicVal;
+	}
+	
+	/**
+	 * This method is used to check for the particular pattern of the board.
+	 * @param player which player we are
+	 * @param start	the starting coordinate
+	 * @param direction which direction to check for the pattern (row/vertical/diagonal)
+	 * @param state current boardstate of the game
+	 * @return
+	 */
+    private int[]checkForPattern(int player, PentagoCoord start, UnaryOperator<PentagoCoord> direction) {
+    	int[] result = new int[2];
+        int counter = 0;
+        int notBlocked = 0;
+        Piece currColour = player == 0 ? Piece.WHITE : Piece.BLACK;
+        PentagoCoord current = start;
+        if(this.board[current.getX()][current.getY()] == Piece.EMPTY) notBlocked = 1;
+        while(true) {
+            try {
+                if (currColour == board[current.getX()][current.getY()]) {
+                    counter++;
+                    current = direction.apply(current);
+                } else {
+                	if(Piece.EMPTY == board[current.getX()][current.getY()]) notBlocked++;
+                    break;
+                }
+            } catch (IllegalArgumentException e) { //We have run off the board
+                break;
+            }
+        }
+        result[0] = counter;
+        result[1] = notBlocked;
+        return result;
+    }
+    
+    private void toStringBoard(Piece[][] aboard) {
+    	for(int i=0; i<6; i++) {
+    		for(int j=0; j<6; j++) {
+        		System.out.print(aboard[i][j].name() + " ");
+    		}
+    		System.out.println();
+    	}
+    	System.out.println();
+    	System.out.println();
+    }
+}

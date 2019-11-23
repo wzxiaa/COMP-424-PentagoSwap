@@ -1,0 +1,13 @@
+# Server version 0.08 running on macbook-pro-3:8123
+# Game ID: 34
+# Board class: pentago_swap.PentagoBoard
+# Timeout: 2000
+# First Move Timeout: 30000
+# Date: Sun Mar 31 02:03:33 EDT 2019
+# Player 1: Player-0, 'RandomPlayer', running on macbook-pro-3
+# Player 2: Player-1, '260732931', running on macbook-pro-3
+START Player-0 RandomPlayer
+START Player-1 260732931
+5 2 TR BR 0
+GAMEOVER TIMEOUT WINNER 0
+# Game ended: Sun Mar 31 02:04:04 EDT 2019
